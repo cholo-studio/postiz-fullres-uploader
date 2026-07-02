@@ -26,6 +26,14 @@ test('appends missing extension to path from source url (issue #1147)', async ()
   expect(result.path).toBe('https://cdn/x/abc.mp4')
 })
 
+test('parses extension from a source url that has a query string (#1147)', async () => {
+  const spy = mockFetch(200, { id: 'abc', path: 'https://cdn/x/abc' })
+  const result = await uploadFromUrl({
+    apiKey: 'K', url: 'https://blob/clip.mp4?token=abc123', apiBase: 'https://api.test/v1', fetchImpl: spy,
+  })
+  expect(result.path).toBe('https://cdn/x/abc.mp4')
+})
+
 test('throws a German error on failure', async () => {
   const spy = mockFetch(401, { error: 'unauthorized' })
   await expect(
