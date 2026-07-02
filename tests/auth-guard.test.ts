@@ -15,3 +15,14 @@ test('rejects a request with no cookie', async () => {
   const req = new Request('http://localhost/api/blob-token')
   expect(await requireSession(req)).toBe(false)
 })
+
+test('rejects when SESSION_SECRET is unset', async () => {
+  const saved = process.env.SESSION_SECRET
+  delete process.env.SESSION_SECRET
+  try {
+    const req = new Request('http://localhost/api/blob-token')
+    expect(await requireSession(req)).toBe(false)
+  } finally {
+    process.env.SESSION_SECRET = saved
+  }
+})

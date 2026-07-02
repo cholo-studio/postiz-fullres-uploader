@@ -6,13 +6,14 @@ export async function POST(request: Request): Promise<Response> {
   if (!(await requireSession(request))) {
     return Response.json({ error: 'Nicht angemeldet' }, { status: 401 })
   }
-  const body = (await request.json()) as HandleUploadBody
   try {
+    const body = (await request.json()) as HandleUploadBody
     const result = await handleUpload({
       body,
       request,
       onBeforeGenerateToken: async (_pathname, clientPayload) => {
-        const mime = clientPayload ? (JSON.parse(clientPayload).type as string) : ''
+        let mime = ''
+        try { mime = clientPayload ? (JSON.parse(clientPayload).type as string) : '' } catch { mime = '' }
         return {
           allowedContentTypes: isAllowedType(mime) ? [mime] : [],
           maximumSizeInBytes: 512 * 1024 * 1024,
@@ -22,6 +23,7 @@ export async function POST(request: Request): Promise<Response> {
     })
     return Response.json(result)
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 400 })
+    const message = err instanceof Error ? err.message : 'Upload-Fehler'
+    return Response.json({ error: message }, { status: 400 })
   }
 }
