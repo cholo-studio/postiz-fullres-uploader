@@ -1,6 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose'
 
-export const SESSION_COOKIE = 'miperu_session'
+export const SESSION_COOKIE = 'postiz_uploader_session'
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 30
 
 function key(secret: string): Uint8Array {

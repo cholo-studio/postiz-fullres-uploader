@@ -15,7 +15,7 @@ export interface KvLike {
   lrange(key: string, start: number, stop: number): Promise<string[]>
 }
 
-export const HISTORY_KEY = 'miperu:uploads'
+export const HISTORY_KEY = 'postiz-uploader:history'
 export const HISTORY_LIMIT = 200
 
 export async function addEntry(entry: HistoryEntry, kv: KvLike): Promise<void> {

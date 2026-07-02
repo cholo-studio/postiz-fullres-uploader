@@ -8,7 +8,7 @@ import { getStrings } from '@/lib/strings'
 
 const t = getStrings(lang)
 
-type Status = { id: string; name: string; state: 'läuft' | 'fertig' | 'fehler'; message?: string }
+type Status = { id: string; name: string; state: 'running' | 'done' | 'error'; message?: string }
 
 export default function Uploader({ onDone }: { onDone: () => void }) {
   const [statuses, setStatuses] = useState<Status[]>([])
@@ -18,15 +18,15 @@ export default function Uploader({ onDone }: { onDone: () => void }) {
     for (const file of Array.from(files)) {
       const id = crypto.randomUUID()
       if (!isAllowedType(file.type)) {
-        setStatuses((s) => [{ id, name: file.name, state: 'fehler', message: t.typeNotAllowed }, ...s])
+        setStatuses((s) => [{ id, name: file.name, state: 'error', message: t.typeNotAllowed }, ...s])
         continue
       }
       const kind = mediaKind(file.type)
       if (!kind) {
-        setStatuses((s) => [{ id, name: file.name, state: 'fehler', message: t.typeNotAllowed }, ...s])
+        setStatuses((s) => [{ id, name: file.name, state: 'error', message: t.typeNotAllowed }, ...s])
         continue
       }
-      setStatuses((s) => [{ id, name: file.name, state: 'läuft' }, ...s])
+      setStatuses((s) => [{ id, name: file.name, state: 'running' }, ...s])
       try {
         const thumb = await makeThumbnail(file)
         const original = await upload(file.name, file, {
@@ -45,12 +45,12 @@ export default function Uploader({ onDone }: { onDone: () => void }) {
           }),
         })
         if (!res.ok) throw new Error((await res.json()).error ?? t.genericError)
-        setStatuses((s) => s.map((x) => x.id === id && x.state === 'läuft'
-          ? { id, name: file.name, state: 'fertig' } : x))
+        setStatuses((s) => s.map((x) => x.id === id && x.state === 'running'
+          ? { id, name: file.name, state: 'done' } : x))
         onDone()
       } catch (err) {
-        setStatuses((s) => s.map((x) => x.id === id && x.state === 'läuft'
-          ? { id, name: file.name, state: 'fehler', message: (err as Error).message } : x))
+        setStatuses((s) => s.map((x) => x.id === id && x.state === 'running'
+          ? { id, name: file.name, state: 'error', message: (err as Error).message } : x))
       }
     }
   }
@@ -68,7 +68,7 @@ export default function Uploader({ onDone }: { onDone: () => void }) {
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {statuses.map((s) => (
           <li key={s.id} style={{ padding: 8 }}>
-            {s.state === 'fertig' ? '✓' : s.state === 'fehler' ? '✕' : '…'} {s.name}
+            {s.state === 'done' ? '✓' : s.state === 'error' ? '✕' : '…'} {s.name}
             {s.message ? ` — ${s.message}` : ''}
           </li>
         ))}

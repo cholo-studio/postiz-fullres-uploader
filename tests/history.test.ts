@@ -34,5 +34,5 @@ test('listEntries returns newest-first parsed entries', async () => {
 })
 
 test('uses the shared history key', () => {
-  expect(HISTORY_KEY).toBe('miperu:uploads')
+  expect(HISTORY_KEY).toBe('postiz-uploader:history')
 })
