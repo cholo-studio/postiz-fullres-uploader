@@ -35,6 +35,9 @@ export async function uploadFromUrl(opts: {
     throw new Error(`Postiz-Upload fehlgeschlagen (${res.status}): ${text}`)
   }
   const data = (await res.json()) as PostizUpload
+  if (!data || !data.id || !data.path) {
+    throw new Error('Unerwartete Postiz-Antwort')
+  }
   if (data.path && !hasExtension(data.path)) {
     const ext = extensionOf(opts.url)
     if (ext) data.path = `${data.path}.${ext}`

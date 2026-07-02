@@ -35,6 +35,10 @@ export async function finalizeUpload(input: FinalizeInput, deps: FinalizeDeps): 
     uploadedAt: deps.now(),
   }
   await addEntry(entry, deps.kv)
-  await deps.deleteBlob(input.originalBlobUrl)
+  try {
+    await deps.deleteBlob(input.originalBlobUrl)
+  } catch {
+    // original blob cleanup failed — orphaned blob, non-fatal
+  }
   return entry
 }

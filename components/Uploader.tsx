@@ -17,10 +17,13 @@ export default function Uploader({ onDone }: { onDone: () => void }) {
         setStatuses((s) => [{ id, name: file.name, state: 'fehler', message: 'Dateityp nicht erlaubt' }, ...s])
         continue
       }
+      const kind = mediaKind(file.type)
+      if (!kind) {
+        setStatuses((s) => [{ id, name: file.name, state: 'fehler', message: 'Dateityp nicht erlaubt' }, ...s])
+        continue
+      }
       setStatuses((s) => [{ id, name: file.name, state: 'läuft' }, ...s])
       try {
-        const kind = mediaKind(file.type)
-        if (!kind) continue
         const thumb = await makeThumbnail(file)
         const original = await upload(file.name, file, {
           access: 'public', handleUploadUrl: '/api/blob-token',

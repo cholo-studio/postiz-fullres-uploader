@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, test } from 'vitest'
+import { beforeEach, expect, test } from 'vitest'
 import { POST } from '@/app/api/login/route'
 import { SESSION_COOKIE } from '@/lib/session'
 
