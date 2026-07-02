@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'crypto'
 import { createSessionToken, sessionCookieAttributes } from '@/lib/session'
 
 export async function POST(request: Request): Promise<Response> {
@@ -7,7 +8,10 @@ export async function POST(request: Request): Promise<Response> {
   if (!expected || !secret) {
     return Response.json({ error: 'Server nicht konfiguriert' }, { status: 500 })
   }
-  if (!password || password !== expected) {
+  const a = Buffer.from(password ?? '')
+  const b = Buffer.from(expected)
+  const match = a.length === b.length && timingSafeEqual(a, b)
+  if (!match) {
     return Response.json({ error: 'Falsches Passwort' }, { status: 401 })
   }
   const token = await createSessionToken(secret)

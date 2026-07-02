@@ -1,6 +1,7 @@
 import { expect, test } from 'vitest'
 import {
-  createSessionToken, verifySessionToken, readCookie, sessionCookieAttributes, SESSION_COOKIE,
+  createSessionToken, verifySessionToken, readCookie, sessionCookieAttributes,
+  sessionCookieClearAttributes, SESSION_COOKIE,
 } from '@/lib/session'
 
 const SECRET = 'test-secret-at-least-16-chars'
@@ -35,4 +36,14 @@ test('sessionCookieAttributes marks the cookie httpOnly and secure', () => {
   expect(value).toContain('SameSite=Lax')
   expect(value).toContain('Path=/')
   expect(value).toContain('Max-Age=2592000')
+})
+
+test('sessionCookieClearAttributes returns a cookie-clear string', () => {
+  const value = sessionCookieClearAttributes()
+  expect(value).toContain(`${SESSION_COOKIE}=`)
+  expect(value).toContain('Max-Age=0')
+  expect(value).toContain('HttpOnly')
+  expect(value).toContain('Secure')
+  expect(value).toContain('SameSite=Lax')
+  expect(value).toContain('Path=/')
 })

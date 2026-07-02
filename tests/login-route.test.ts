@@ -1,4 +1,4 @@
-import { beforeEach, expect, test } from 'vitest'
+import { afterEach, beforeEach, expect, test } from 'vitest'
 import { POST } from '@/app/api/login/route'
 import { SESSION_COOKIE } from '@/lib/session'
 
@@ -26,4 +26,22 @@ test('wrong password returns 401 and no cookie', async () => {
   expect(res.status).toBe(401)
   expect(res.headers.get('set-cookie')).toBeNull()
   expect(await res.json()).toEqual({ error: 'Falsches Passwort' })
+})
+
+test('empty-string password returns 401', async () => {
+  const res = await POST(req({ password: '' }))
+  expect(res.status).toBe(401)
+  expect(await res.json()).toEqual({ error: 'Falsches Passwort' })
+})
+
+test('missing SHARED_PASSWORD env returns 500', async () => {
+  const saved = process.env.SHARED_PASSWORD
+  delete process.env.SHARED_PASSWORD
+  try {
+    const res = await POST(req({ password: 'geheim123' }))
+    expect(res.status).toBe(500)
+    expect(await res.json()).toEqual({ error: 'Server nicht konfiguriert' })
+  } finally {
+    process.env.SHARED_PASSWORD = saved
+  }
 })

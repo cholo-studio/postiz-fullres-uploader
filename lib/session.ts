@@ -40,3 +40,7 @@ export function readCookie(cookieHeader: string | null, name: string): string | 
 export function sessionCookieAttributes(token: string): string {
   return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${MAX_AGE_SECONDS}`
 }
+
+export function sessionCookieClearAttributes(): string {
+  return `${SESSION_COOKIE}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`
+}
